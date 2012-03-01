@@ -1,0 +1,139 @@
+html, body, h1, h2 {
+  padding: 0;
+  margin: 0;
+  font-weight: normal;
+}
+
+body {
+  width: 238px;
+  padding: 5px;
+  font: 12px/1.5 "微软雅黑", "Microsoft YaHei", "宋体", tahoma, arial;
+  color: #333;
+  -webkit-user-select: none;
+  cursor: default;
+}
+
+header {
+  margin-bottom: 5px;
+}
+
+header h1 {
+  display: inline-block;
+  font-size: 18px;
+  font-weight: bold;
+  margin-left: 5px;
+  color: #4d90fe;
+}
+
+#version {
+  vertical-align: bottom;
+  margin-left: 5px;
+  color: #666;
+}
+
+#about-link, #time-setting-link {
+  vertical-align: bottom;
+  color: #666;
+  text-decoration: underline;
+  margin-left: 115px;
+  cursor: pointer;
+}
+
+h2 {
+  display: inline-block;
+  font-size: 14px;
+}
+
+button {
+  height: 25px;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#4d90fe), to(#4787ed));
+  border-radius: 2px;
+  color: white;
+  -webkit-transition: border-color .218s;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  cursor: default;
+  outline: none;
+  padding: 0 10px;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#4d90fe), to(#357ae8));
+  border-color: #2F5BB7 !important;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+button:disabled {
+  box-shadow: none;
+  background: -webkit-linear-gradient(#FAFAFA, #F4F4F4 40%, #E5E5E5);
+  border-color: #AAA;
+  color: #888;
+}
+
+#modes {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.mode {
+  margin-right: 5px;
+}
+
+#modes > label {
+  margin-right: 10px;
+}
+
+#remind-booking-setting {
+  display: none;
+  padding: 5px 0 5px 24px;
+  border-radius: 4px;
+}
+
+#modes .active {
+  color: #1d81c0;
+  border: 1px solid #1d81c0;
+  padding-left: 20px;
+  cursor: default;
+  box-shadow: none;
+  background: -webkit-linear-gradient(#FAFAFA, #F4F4F4 40%, #E5E5E5), url(../images/checked.png);
+  border-color: #AAA;
+  color: #888;
+}
+
+.separater {
+  border-bottom: 1px dashed #ccc;
+}
+
+.vmiddle-wrapper > * {
+  vertical-align: middle;
+}
+
+#remind-time {
+  width: 60px;
+  border: 1px solid #CCC;
+  border-radius: 2px;
+  padding: 2px 5px;
+  outline: none;
+}
+
+#set-remind-time {
+  height: 22px;
+  padding: 0 7px;
+  margin-left: 10px;
+}
+
+#booking-action {
+  margin-top: 5px;
+  padding: 5px;
+}
+
+#booking-status {
+  padding-left: 20px;
+  margin: 10px 0 5px 5px;
+  background: transparent url(../images/checked.png) 0 3px no-repeat;
+  font-size: 14px;
+  font-weight: bold;
+}

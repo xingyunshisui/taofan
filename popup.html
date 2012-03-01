@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>TaoFan</title>
+<meta charset="utf-8">
+<!--<link type="text/css" rel="stylesheet" href="css/popup.css">-->
+<style>
+  html, body, h1, h2 {
+  padding: 0;
+  margin: 0;
+  font-weight: normal;
+}
+
+body {
+  width: 238px;
+  padding: 5px;
+  font: 12px/1.5 "微软雅黑", "Microsoft YaHei", "宋体", tahoma, arial;
+  color: #333;
+  background: #f2f5f6;
+  -webkit-user-select: none;
+  cursor: default;
+}
+
+header {
+  margin-bottom: 5px;
+}
+
+header h1 {
+  display: inline-block;
+  font-size: 18px;
+  font-weight: bold;
+  margin-left: 5px;
+  color: #4d90fe;
+}
+
+#version {
+  vertical-align: bottom;
+  margin-left: 5px;
+  color: #666;
+}
+
+#about-link {
+  right: 8px;
+}
+
+#time-setting-link {
+  display: none;
+  right: 38px;
+}
+
+.link {
+  position: absolute;
+  top: 13px;
+  color: #666;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+h2 {
+  display: inline-block;
+  font-size: 14px;
+}
+
+button {
+  height: 25px;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#4d90fe), to(#4787ed));
+  border-radius: 2px;
+  color: white;
+  -webkit-transition: border-color .218s;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  cursor: default;
+  outline: none;
+  padding: 0 10px;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#4d90fe), to(#357ae8));
+  border-color: #2F5BB7 !important;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+button:disabled {
+  box-shadow: none;
+  background: -webkit-linear-gradient(#FAFAFA, #F4F4F4 40%, #E5E5E5);
+  border-color: #AAA;
+  color: #888;
+}
+
+#modes {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.mode {
+  margin-right: 5px;
+}
+
+#modes > label {
+  margin-right: 10px;
+}
+
+#remind-booking-setting {
+  display: none;
+  padding-top: 8px;
+  padding-left: 4px;
+}
+
+#modes .active {
+  color: #1d81c0;
+  border: 1px solid #1d81c0;
+  padding-left: 20px;
+  cursor: default;
+  box-shadow: none;
+  background: -webkit-linear-gradient(#FAFAFA, #F4F4F4 40%, #E5E5E5), url(../images/checked.png);
+  border-color: #AAA;
+  color: #888;
+}
+
+.separater {
+  border-bottom: 1px dashed #ccc;
+}
+
+.vmiddle-wrapper > * {
+  vertical-align: middle;
+}
+
+#remind-time {
+  width: 80px;
+  border: 1px solid #CCC;
+  border-radius: 2px;
+  padding: 2px 5px;
+  outline: none;
+}
+
+#set-remind-time {
+  height: 22px;
+  padding: 0 7px;
+  margin-left: 10px;
+}
+
+#booking-action {
+  margin-top: 5px;
+  padding: 5px;
+}
+
+#booking-status {
+  display: none;
+  padding-left: 20px;
+  margin: 10px 0 5px 5px;
+  background: transparent url(../images/checked.png) 0 3px no-repeat;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#time-setting-error {
+  display: none;
+  color: red;
+  padding-top: 5px;
+}
+
+#booking-action > button, #wrapper, #loading {
+  display: none;
+}
+
+#unlogedin-msg {
+  padding-top: 8px;
+  display: none;
+}
+
+#booking-status.not-booked {
+  background: transparent url(../images/warn.png) 0 4px no-repeat;
+}
+
+#booking-status.loading {
+  background: transparent url(../images/loading.gif) 0 4px no-repeat !important;
+}
+
+#dinner-info {
+  font-size: 14px;
+  padding: 5px;
+  margin-bottom: 5px;
+  background: #ebebeb;
+  border: 1px dashed #ccc;
+}
+
+#supplier {
+  color: red;
+}
+
+#dishes {
+  font-size: 13px;
+  padding-left: 8px;
+  color: red;
+}
+</style>
+</head>
+<body>
+<header class="vmiddle-wrapper">
+  <img src="images/bowl.png" /><h1>淘饭</h1><span id="version">v18</span>
+  <a id="time-setting-link" class="link">设置订餐时间</a><a id="about-link" class="link">关于</a>
+</header>
+<section id="dinner-info">
+  <div>今日晚餐由 <span id="supplier">供应商</span> 提供：</div>
+  <div><span id="dishes">各种菜~~</span></div>
+</section>
+<section id="wrapper">
+  <div id="modes" class="vmiddle-wrapper">
+    <input type="radio" name="mode" checked id="remind-book" class="mode" title="点击切换为提醒订餐模式" /><label for="remind-book">提醒订餐模式</label>
+    <input type="radio" name="mode" id="auto-book" class="mode" title="点击切换为自动订餐模式"  /><label for="auto-book">自动订餐模式</label>
+  </div>
+  <div id="booking-status" class="not-booked">已订餐。</div>
+  <div id="booking-action" class="vmiddle-wrapper">
+    <button id="book">订餐</button>
+    <button id="unbook">取消订餐</button>
+    <img id="loading" src="images/loading.gif" />
+    <button id="pause-book">暂停订餐</button>
+    <button id="resume-book">恢复订餐</button>
+  </div>
+</section>
+<div id="main-info"></div>
+<section id="remind-booking-setting" class="vmiddle-wrapper">
+  <label for="remind-time">设置提醒时间：</label><input id="remind-time" type="time" value="11:00"  min="00:00" max="14:50" step="60" pattern="(?:0\d|1[0-4]):[0-5]\d"/>
+  <button id="set-remind-time">完成</button>
+  <div id="time-setting-error">请设置在 00:00 - 14:59 之间，并符合 hh:mm 格式的提醒时间。</div>
+</section>
+<section id="about"></section>
+<section id="unlogedin-msg">您尚未登录订餐系统，<a href="http://bjdc.taobao.ali.com/" target="_blank">点击登录</a>，建议保存登录状态方便订餐:)</section>
+<script src="js/rock.js"></script>
+<script src="js/popup-main.js"></script>
+<script src="js/remind-mode.js"></script>
+<script>
+  Main.init();
+</script>
+</body>
+</html>

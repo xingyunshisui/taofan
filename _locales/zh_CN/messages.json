@@ -1,0 +1,13 @@
+{
+  "name": {"message": "淘饭 (by 花果山团队)"},
+  "description": {"message": "淘宝北京订餐扩展"},
+  "default_title": {"message": "淘饭"},
+  "unsigned_in": {"message": "您尚未登录，请先到$1神奇的网站$2登录:)"},
+  "booking_timeout": {"message": "订餐时间已过，明天再订吧:)"},
+  "booking_succeed": {"message": "订餐成功:)"},
+  "booking_failure": {"message": "订餐失败:("},
+  "retry": {"message": "$1秒后重试"},
+  "connection_failure": {"message": "连接订餐服务失败:("},
+  "invalid_time": {"message": "请设置在 00:00 - 14:50 之间，并符合 hh:mm 格式的提醒时间"}
+
+}
