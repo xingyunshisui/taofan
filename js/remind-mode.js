@@ -1,4 +1,6 @@
 var RemindMode = (function() {
+  var bg = chrome.extension.getBackgroundPage();
+  var TaoFan = bg.TaoFan;
   return {
     init: function() {
       var self = this;
@@ -44,6 +46,13 @@ var RemindMode = (function() {
       $('#time-setting-error').hide();
     },
 
+    setReminder: function() {
+      var time = localStorage.getItem('remind_time');
+      var hours = parseInt(time.split(':')[0]);
+      var minutes = parseInt(time.split(':')[1]);
+      TaoFan.setReminder(hours, minutes);
+    },
+
     submitTimeSetting: function() {
       var $remindTime = $('#remind-time');
       var time = $remindTime.val();
@@ -51,6 +60,7 @@ var RemindMode = (function() {
         this.hideError();
         this.hideTimeSetting();
         localStorage.setItem('remind_time', time);
+        this.setReminder();
         Main.show();
       } else {
         this.showError();

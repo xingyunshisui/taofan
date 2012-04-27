@@ -7,10 +7,10 @@ var TaoFan = (function() {
 
   const BOOKED_SELECTOR = '#block-block-2 .content a[href="/budingcan"]';
   const UNBOOK_SELECTOR = '#block-block-2 .content a[href="/dingcan"]';
-  const LOGEDIN_SELECTOR = '';
+  const LOGEDIN_SELECTOR = 'li.leaf > a[href="/logout"]';
   const USERNAME_FIELD_ID = 'edit-name';
   const PWD_FIELD_ID = 'edit-pass';
-  const BOOK_LATE_SELECTOR = '';
+  const BOOK_LATE_TEXT = '\u5df2\u7ecf\u8fc7\u4e86\u4eca\u5929\u7684\u8ba2\u9910\u65f6\u95f4\u5566\uff01\uff01\u660e\u5929\u518d\u5728\u516c\u53f8\u5403\u5427';
   const DINNER_INFO_SELECTOR = '.article font';
 
   const LOG_ENABLED = true;
@@ -61,8 +61,15 @@ var TaoFan = (function() {
       
       this.checkStatus(function(status) {
         self.setStatus(status);
-        if (status == 'unbook' && bookMode == 'auto' && self.isValidTime()) {
-          self.book();
+        if (status == 'unbook') {
+          if (bookMode == 'auto') {
+            self.book();
+          } else if (bookMode == 'remind') {
+            var remindTime = localStorage.getItem('remind_item');
+            var remindHours = parseInt(remindTime.split(':')[0]);
+            var remindMinutes = parseInt(remindTime.split(':')[1]);
+            self.setReminder(remindHours, remindMinutes);
+          }
         }
       });
 
@@ -73,6 +80,35 @@ var TaoFan = (function() {
         self.setStatus(status);
         log('Received status message from content script: ' + status);
       });
+    },
+
+    remindTimer: null,
+    setReminder: function(hours, minutes) {
+      this.removeReminder();
+      var now = new Date();
+      var nowInMs = now.getTime();
+      now.setHours(hours);
+      now.setMinutes(minutes);
+      now.setSeconds(0);
+      var remindTimeInMs = now.getTime();
+      var self = this;
+
+      // 只在未订餐的情况下提醒订餐
+      if (remindTimeInMs > nowInMs) {
+        this.remindTimer = setTimeout(function() {
+          if (self.status != 'booked') {
+            self.showNotification();
+          }
+        }, remindTimeInMs - nowInMs);
+      } else if (self.isValidTime()) {
+        if (self.status != 'booked') {
+          self.showNotification();
+        }
+      }
+    },
+
+    removeReminder: function() {
+      clearTimeout(this.remindTimer);
     },
 
     status: null,
@@ -105,6 +141,10 @@ var TaoFan = (function() {
         case 'late':
           title = '订餐时间已过，明天再在公司吃吧~';
           break;
+
+        case 'can_not_unbook':
+          title = '已订餐';
+          break;
         case 'error':
           title = '出错了:(';
           break;
@@ -125,21 +165,25 @@ var TaoFan = (function() {
     parseStatus: function(html) {
       var div = document.createElement('div');
       document.body.appendChild(div);
-      div.innerHTML = html;
+      try {
+        div.innerHTML = html;
+      } catch (e) {}
       var status = 'error';
       if (document.getElementById(USERNAME_FIELD_ID) &&
           document.getElementById(PWD_FIELD_ID)) {
         status = 'un_loged_in';
       } else if (div.querySelector(LOGEDIN_SELECTOR)) {
         status = 'loged_in';
-      } else if(div.querySelector(BOOK_LATE_SELECTOR)) {
-        status = 'late';
-      } else if (div.querySelector(BOOKED_SELECTOR)) {
-        status = 'booked';
-      } else if (div.querySelector(UNBOOK_SELECTOR)) {
-        status = 'unbook';
+        if(html.indexOf(BOOK_LATE_TEXT) > 0) {
+          status = 'late';
+        } else if (div.querySelector(BOOKED_SELECTOR)) {
+          status = 'booked';
+        } else if (div.querySelector(UNBOOK_SELECTOR)) {
+          status = 'unbook';
+        }
       }
       document.body.removeChild(div);
+      log('[parseStatus] -> status : ' + status);
       return status;
     },
 
@@ -154,8 +198,11 @@ var TaoFan = (function() {
         document.body.appendChild(div);
         div.innerHTML = html;
         var dinnerInfo = div.querySelector(DINNER_INFO_SELECTOR);
-        var supplier = dinnerInfo.querySelector('b').innerText.match(/\uff08(.+)\uff09/)[1];
-        var dishes = dinnerInfo.lastChild.nodeValue.trim().match(/\u4eca\u65e5\u83dc\u5355\uff1a\s+(.+)/)[1];
+        try {
+          var supplier = dinnerInfo.querySelector('b').innerText.match(/\uff08(.+)\uff09/)[1];
+          var dishes = dinnerInfo.lastChild.nodeValue.trim().match(/\u83dc\u5355\uff1a\s*(.+)/)[1];
+          log('[getDinnerInfo] -> supplier: ' + supplier + ' , dishes: ' + dishes);
+        } catch (e) {}
         self.supplier = supplier;
         self.dishes = dishes;
         cb && cb(supplier, dishes);
@@ -187,6 +234,8 @@ var TaoFan = (function() {
       var self = this;
       ajaxGet(UNBOOK_URL, function(res) {
         var status = self.parseStatus(res);
+        if (status == 'late')
+          status = 'can_not_unbook';
         cb(status);
         self.setStatus(status);
       }, function (status) {
@@ -209,10 +258,13 @@ var TaoFan = (function() {
       return hour >= MIN_HOUR && hour < MAX_HOUR;
     },
 
+    notification: null,
     showNotification: function() {
-      var htmlNotification =
-        webkitNotifications.createHTMLNotification('notification.html');
-      htmlNotification.show();
+      if (!this.notification) {
+        this.notification =
+          webkitNotifications.createHTMLNotification('notification.html');
+      }
+      this.notification.show();
     }
   };
 

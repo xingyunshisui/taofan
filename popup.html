@@ -45,7 +45,7 @@ header h1 {
 
 #time-setting-link {
   display: none;
-  right: 38px;
+  right: 8px;
 }
 
 .link {
@@ -192,16 +192,25 @@ button:disabled {
 }
 
 #dishes {
+  display: inline-block;
   font-size: 13px;
   padding-left: 8px;
+  color: red;
+}
+
+#feedback, #main-info {
+  margin: 3px 8px;
+}
+
+#main-info {
   color: red;
 }
 </style>
 </head>
 <body>
 <header class="vmiddle-wrapper">
-  <img src="images/bowl.png" /><h1>淘饭</h1><span id="version">v18</span>
-  <a id="time-setting-link" class="link">设置订餐时间</a><a id="about-link" class="link">关于</a>
+  <img src="images/bowl.png" /><h1>淘饭</h1><span id="version">v0.1</span>
+  <a id="time-setting-link" class="link">设置订餐提醒时间</a>
 </header>
 <section id="dinner-info">
   <div>今日晚餐由 <span id="supplier">供应商</span> 提供：</div>
@@ -227,7 +236,7 @@ button:disabled {
   <button id="set-remind-time">完成</button>
   <div id="time-setting-error">请设置在 00:00 - 14:59 之间，并符合 hh:mm 格式的提醒时间。</div>
 </section>
-<section id="about"></section>
+<section id="feedback"><strong>反馈：</strong><a href="mailto://damao.wj@taobao.com">damao.wj@taobao.com</a></section>
 <section id="unlogedin-msg">您尚未登录订餐系统，<a href="http://bjdc.taobao.ali.com/" target="_blank">点击登录</a>，建议保存登录状态方便订餐:)</section>
 <script src="js/rock.js"></script>
 <script src="js/popup-main.js"></script>

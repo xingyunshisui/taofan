@@ -17,8 +17,10 @@ var Main = (function() {
         this.show();
         if (status == 'unbook') {
           this.showUnBooked();
-        } else if (status == 'booked') {
+        } else if (status == 'booked' || status == 'can_not_unbook') {
           this.showBooked();
+        } else if (status == 'late') {
+          this.showMainMsg('订餐时间已过，明天再在公司吃吧~');
         }
       } else {
         this.hide();
@@ -44,11 +46,16 @@ var Main = (function() {
       $('#remind-book').on('click', function() {
         localStorage.setItem('book_mode', 'remind');
         RemindMode.showLink();
+        RemindMode.setReminder();
       });
 
       $('#auto-book').on('click', function() {
         localStorage.setItem('book_mode', 'auto');
         RemindMode.hideLink();
+        TaoFan.removeReminder();
+        if (TaoFan.getStatus() != 'booked') {
+          TaoFan.book();
+        }
       });
 
       $('#book').on('click', function() {
@@ -61,6 +68,8 @@ var Main = (function() {
           } else if (status == 'un_loged_in') {
             self.hide();
             self.showUnlogedinMsg();
+          } else if (status == 'late') {
+            self.showMainMsg('订餐时间已过，明天再在公司吃吧~');
           } else {
             self.showMainMsg('Errorrrrrrrrrrr...');
           }
@@ -79,6 +88,9 @@ var Main = (function() {
             self.showUnlogedinMsg();
           } else if (status == 'booked') {
             self.showBooked();
+          } else if (status == 'can_not_unbook') {
+            self.showBooked();
+            self.showMainMsg('已过订餐时间，无法取消。');
           } else {
             self.showMainMsg('Errorrrrrrrrrrr...');
           }
@@ -95,6 +107,10 @@ var Main = (function() {
         localStorage.setItem('book_pause', false);
         self.showPauseBook();
         self.hideResumeBook();
+      });
+
+      $('#about-link').on('click', function() {
+
       });
 
       RemindMode.init();

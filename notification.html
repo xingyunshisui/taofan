@@ -1,9 +1,103 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title></title>
+  <title>订餐提醒</title>
+  <meta charset="utf-8" />
+  <style>
+    body {
+      
+      font: 12px/1.5 "微软雅黑", "Microsoft YaHei", "宋体", tahoma, arial;
+      color: #333
+    }
+
+    #title {
+      padding: 0;
+      font-size: 15px;
+      margin: 10px;
+      display: inline-block;
+    }
+
+    #book-btn, #close-btn {
+      margin-left: 2px;
+      margin-bottom: 5px;
+    }
+    button {
+      height: 25px;
+      background-image: -webkit-gradient(linear, left top, left bottom, from(#4d90fe), to(#4787ed));
+      border-radius: 2px;
+      color: white;
+      -webkit-transition: border-color .218s;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+      cursor: default;
+      outline: none;
+      padding: 0 10px;
+      text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
+    }
+
+    button:hover {
+      background-image: -webkit-gradient(linear, left top, left bottom, from(#4d90fe), to(#357ae8));
+      border-color: #2F5BB7 !important;
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    }
+
+    button:disabled {
+      box-shadow: none;
+      background: -webkit-linear-gradient(#FAFAFA, #F4F4F4 40%, #E5E5E5);
+      border-color: #AAA;
+      color: #888;
+    }
+
+    #loading-msg {
+      display: none;
+      background: url(./images/loading.gif) no-repeat 0 0;
+      padding-left: 20px;
+      font-weight: bold;
+    }
+
+    #info {
+      padding-left: 12px;
+      font-size: 14px;
+      color: red;
+    }
+  </style>
 </head>
 <body>
+  <h1 id="title">淘饭订餐提醒：</h1>
+  <span id="loading-msg">进行中...</span>
+  <button type="button" id="book-btn">订餐</button>
+  <button type="button" id="close-btn">关闭</button>
+  <div id="info"></div>
+  <script>
+    var bg = chrome.extension.getBackgroundPage();
+    var TaoFan = bg.TaoFan;
+    var bookBtn =  document.getElementById('book-btn');
+    var loading = document.getElementById('loading-msg');
+    var info = document.getElementById('info');
 
+    bookBtn.addEventListener('click', function() {
+      loading.style.display = 'inline';
+      bookBtn.style.display = 'none';
+      TaoFan.book(function(status) {
+        loading.style.display = 'none';
+        if (status == 'un_loged_in' || status == 'error') {
+          bookBtn.style.display = 'inline-block';
+          info.innerHTML = '订餐失败。';
+        } else {
+          info.innerHTML = '订餐成功。';
+          setTimeout(function() {
+            window.close();
+          }, 2000);
+        }
+      });
+    }, false);
+
+    document.getElementById('close-btn').addEventListener('click', function() {
+      window.close();
+    }, false);
+
+  </script>
 </body>
 </html>
