@@ -49,6 +49,13 @@ var TaoFan = (function() {
   }
 
   return {
+    paused: false,
+
+    setPaused: function(paused) {
+      this.paused = paused;
+      localStorage.setItem('book_pause', paused);
+    },
+
     init: function() {
       var self = this;
       var bookMode = localStorage.getItem('book_mode');
@@ -59,9 +66,10 @@ var TaoFan = (function() {
         localStorage.setItem('book_pause', false);
       }
       
+      this.paused = localStorage.getItem('book_pause') == 'true';
       this.checkStatus(function(status) {
         self.setStatus(status);
-        if (status == 'unbook') {
+        if (status == 'unbook' && !self.paused) {
           if (bookMode == 'auto') {
             self.book();
           } else if (bookMode == 'remind') {
@@ -96,12 +104,12 @@ var TaoFan = (function() {
       // 只在未订餐的情况下提醒订餐
       if (remindTimeInMs > nowInMs) {
         this.remindTimer = setTimeout(function() {
-          if (self.status != 'booked') {
+          if (self.status != 'booked' && !self.paused) {
             self.showNotification();
           }
         }, remindTimeInMs - nowInMs);
       } else if (self.isValidTime()) {
-        if (self.status != 'booked') {
+        if (self.status != 'booked' && !self.paused) {
           self.showNotification();
         }
       }
@@ -208,7 +216,7 @@ var TaoFan = (function() {
         cb && cb(supplier, dishes);
         document.body.removeChild(div);
       }, function(statusCode) {
-
+        cb && cb('error');
       });
     },
 
@@ -216,7 +224,7 @@ var TaoFan = (function() {
       var self = this;
       ajaxGet(BOOK_URL, function(res) {
         var status = self.parseStatus(res);
-        cb(status);
+        cb && cb(status);
         self.setStatus(status);
       }, function (status) {
         // Not signed in returns 403 forbidden.

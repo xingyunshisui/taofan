@@ -31,9 +31,11 @@ var Main = (function() {
       if (bookMode == 'auto') {
         $('#auto-book').get().checked = true;
         RemindMode.hideLink();
+        this.changePauseResumeButtonText('auto');
       } else {
         $('#remind-book').get().checked = true;
         RemindMode.showLink();
+        this.changePauseResumeButtonText('remind');
       }
 
       var bookPause = localStorage.getItem('book_pause');
@@ -45,15 +47,17 @@ var Main = (function() {
 
       $('#remind-book').on('click', function() {
         localStorage.setItem('book_mode', 'remind');
+        self.changePauseResumeButtonText('remind');
         RemindMode.showLink();
         RemindMode.setReminder();
       });
 
       $('#auto-book').on('click', function() {
         localStorage.setItem('book_mode', 'auto');
+        self.changePauseResumeButtonText('auto');
         RemindMode.hideLink();
         TaoFan.removeReminder();
-        if (TaoFan.getStatus() != 'booked') {
+        if (TaoFan.getStatus() != 'booked' && !TaoFan.paused) {
           TaoFan.book();
         }
       });
@@ -98,27 +102,33 @@ var Main = (function() {
       });
 
       $('#pause-book').on('click', function() {
-        localStorage.setItem('book_pause', true);
+        TaoFan.setPaused(true);
         self.showResumeBook();
         self.hidePauseBook();
+        if (bookMode == 'remind') {
+          TaoFan.removeReminder();
+        }
       });
 
       $('#resume-book').on('click', function() {
-        localStorage.setItem('book_pause', false);
+        TaoFan.setPaused(false);
         self.showPauseBook();
         self.hideResumeBook();
-      });
-
-      $('#about-link').on('click', function() {
-
+        if (bookMode == 'remind') {
+          RemindMode.setReminder();
+        }
       });
 
       RemindMode.init();
     },
 
     setDinnerInfo: function(supplier, dishes) {
-      supplier && $('#supplier').html(supplier);
-      dishes && $('#dishes').html(dishes);
+      if (supplier == 'error') {
+        this.showMainMsg('Errorrrrrrrrrrr...');
+      } else {
+        supplier && $('#supplier').html(supplier);
+        dishes && $('#dishes').html(dishes);
+      }
     },
 
     show: function() {
@@ -181,6 +191,16 @@ var Main = (function() {
     
     hideLoading: function() {
       $('#booking-status').removeClass('loading');
+    },
+
+    changePauseResumeButtonText: function(type) {
+      if (type == 'auto') {
+        $('#pause-book').html('暂停自动订餐');
+        $('#resume-book').html('恢复自动订餐');
+      } else if (type == 'remind') {
+        $('#pause-book').html('暂停提醒订餐');
+        $('#resume-book').html('恢复提醒订餐');
+      }
     }
   }
 })();
